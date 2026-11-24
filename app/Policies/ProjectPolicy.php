@@ -33,6 +33,16 @@ class ProjectPolicy
     }
 
     /**
+     * Determine whether the user can request adoption of the project.
+     */
+    public function requestAdoption(User $user, Project $project): bool
+    {
+        return $project->user_id !== $user->id
+            && $project->status === ProjectStatus::Published
+            && $project->adoption_available;
+    }
+
+    /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, Project $project): bool
