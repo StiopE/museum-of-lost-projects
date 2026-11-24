@@ -4,6 +4,13 @@
 <article class="mx-auto max-w-4xl px-6 py-12">
     <a href="{{ route('projects.index') }}" class="text-sm font-medium text-amber-800">← Back to the collection</a>
     <div class="mt-8"><p class="font-semibold text-amber-700">{{ $project->category->name }}</p><h1 class="mt-2 text-4xl font-bold sm:text-5xl">{{ $project->title }}</h1><p class="mt-5 text-xl leading-8 text-zinc-600">{{ $project->description }}</p><p class="mt-4 text-sm text-zinc-500">Shared by {{ $project->creator->name }}</p></div>
+    @if ($project->images->isNotEmpty())
+        <div class="mt-8 grid gap-4 sm:grid-cols-2">
+            @foreach ($project->images as $image)
+                <img src="{{ route('projects.images.show', [$project, $image]) }}" alt="{{ $image->caption ?: $project->title }}" class="max-h-96 w-full rounded-2xl object-cover" loading="lazy">
+            @endforeach
+        </div>
+    @endif
     <div class="mt-10 space-y-8">
         @foreach (['story' => 'The story', 'original_goal' => 'The original goal', 'abandonment_reason' => 'Why it stopped', 'what_went_wrong' => 'What went wrong', 'what_could_be_improved' => 'What could be improved'] as $field => $heading)
             <section class="rounded-2xl border border-stone-200 bg-white p-6"><h2 class="text-xl font-semibold">{{ $heading }}</h2><p class="mt-3 whitespace-pre-line leading-7 text-zinc-700">{{ $project->{$field} }}</p></section>

@@ -79,7 +79,7 @@ class ProjectController extends Controller
     {
         Gate::authorize('update', $project);
 
-        $project->load(['category', 'adoptionRequests.requester', 'adoptionRequests.revivedProject']);
+        $project->load(['category', 'images', 'adoptionRequests.requester', 'adoptionRequests.revivedProject']);
 
         return view('my.projects.edit', [
             'project' => $project,
@@ -89,13 +89,13 @@ class ProjectController extends Controller
 
     public function store(StoreProjectRequest $request): RedirectResponse
     {
-        $request->user()->projects()->create([
+        $project = $request->user()->projects()->create([
             ...$request->validated(),
             'status' => ProjectStatus::Draft,
             'adoption_available' => false,
         ]);
 
-        return redirect()->route('my.projects.index')->with('status', 'Project saved as a draft.');
+        return redirect()->route('my.projects.edit', $project)->with('status', 'Project saved as a draft.');
     }
 
     public function update(UpdateProjectRequest $request, Project $project): RedirectResponse

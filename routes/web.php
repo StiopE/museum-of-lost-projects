@@ -2,11 +2,15 @@
 
 use App\Http\Controllers\AdoptionRequestController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectImageController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
 Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
+Route::get('/projects/{project}/images/{image}', [ProjectImageController::class, 'show'])
+    ->scopeBindings()
+    ->name('projects.images.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
@@ -21,6 +25,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::patch('/{project}/archive', 'archive')->name('archive');
         Route::delete('/{project}', 'destroy')->name('destroy');
     });
+
+    Route::post('/my/projects/{project}/images', [ProjectImageController::class, 'store'])
+        ->name('my.projects.images.store');
+    Route::delete('/my/projects/{project}/images/{image}', [ProjectImageController::class, 'destroy'])
+        ->scopeBindings()
+        ->name('my.projects.images.destroy');
 
     Route::post('/projects/{project}/adoption-requests', [AdoptionRequestController::class, 'store'])
         ->name('projects.adoption-requests.store');

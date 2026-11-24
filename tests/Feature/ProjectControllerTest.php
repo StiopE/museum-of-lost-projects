@@ -71,7 +71,9 @@ test('a creator can save a project as a private draft', function () {
         'adoption_available' => true,
     ]);
 
-    $response->assertRedirectToRoute('my.projects.index');
+    $createdProject = Project::query()->where('title', 'A promising abandoned idea')->firstOrFail();
+
+    $response->assertRedirectToRoute('my.projects.edit', $createdProject);
     $this->assertDatabaseHas('projects', [
         'user_id' => $creator->id,
         'category_id' => $category->id,
