@@ -5,12 +5,17 @@ use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
+Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
+Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
 
     Route::prefix('my/projects')->name('my.projects.')->controller(ProjectController::class)->group(function () {
+        Route::get('/', 'myIndex')->name('index');
+        Route::get('/create', 'create')->name('create');
         Route::post('/', 'store')->name('store');
+        Route::get('/{project}/edit', 'edit')->name('edit');
         Route::put('/{project}', 'update')->name('update');
         Route::patch('/{project}/publish', 'publish')->name('publish');
         Route::patch('/{project}/archive', 'archive')->name('archive');

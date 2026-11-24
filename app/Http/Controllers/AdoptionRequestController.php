@@ -23,7 +23,7 @@ class AdoptionRequestController extends Controller
             (string) $validated['message'],
         );
 
-        return redirect()->route('dashboard')->with('status', 'Adoption request sent.');
+        return redirect()->route('projects.show', $project)->with('status', 'Adoption request sent.');
     }
 
     public function approve(AdoptionRequest $adoptionRequest): RedirectResponse
@@ -32,7 +32,7 @@ class AdoptionRequestController extends Controller
 
         $this->adoptionRequestService->approve($adoptionRequest);
 
-        return redirect()->route('dashboard')->with('status', 'Adoption request approved. A revived project draft was created.');
+        return redirect()->route('my.projects.edit', $adoptionRequest->project)->with('status', 'Adoption request approved. A revived project draft was created.');
     }
 
     public function reject(AdoptionRequest $adoptionRequest): RedirectResponse
@@ -41,7 +41,7 @@ class AdoptionRequestController extends Controller
 
         $this->adoptionRequestService->reject($adoptionRequest);
 
-        return redirect()->route('dashboard')->with('status', 'Adoption request rejected.');
+        return redirect()->route('my.projects.edit', $adoptionRequest->project)->with('status', 'Adoption request rejected.');
     }
 
     public function cancel(AdoptionRequest $adoptionRequest): RedirectResponse
@@ -50,6 +50,6 @@ class AdoptionRequestController extends Controller
 
         $this->adoptionRequestService->cancel($adoptionRequest);
 
-        return redirect()->route('dashboard')->with('status', 'Adoption request cancelled.');
+        return redirect()->route('projects.show', $adoptionRequest->project)->with('status', 'Adoption request cancelled.');
     }
 }
