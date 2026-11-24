@@ -62,6 +62,30 @@ class Project extends Model
     }
 
     /**
+     * Get the images attached to this project.
+     */
+    public function images(): HasMany
+    {
+        return $this->hasMany(ProjectImage::class)->orderBy('sort_order');
+    }
+
+    /**
+     * Get the adoption requests for this project.
+     */
+    public function adoptionRequests(): HasMany
+    {
+        return $this->hasMany(AdoptionRequest::class);
+    }
+
+    /**
+     * Get the progress updates for this project.
+     */
+    public function updates(): HasMany
+    {
+        return $this->hasMany(ProjectUpdate::class);
+    }
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>

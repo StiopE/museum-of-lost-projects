@@ -46,6 +46,7 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
     }
 
@@ -55,6 +56,22 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class);
+    }
+
+    /**
+     * Get the adoption requests submitted by the user.
+     */
+    public function adoptionRequests(): HasMany
+    {
+        return $this->hasMany(AdoptionRequest::class);
+    }
+
+    /**
+     * Get the project updates written by the user.
+     */
+    public function projectUpdates(): HasMany
+    {
+        return $this->hasMany(ProjectUpdate::class);
     }
 
     /**

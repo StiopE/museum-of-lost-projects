@@ -37,4 +37,34 @@ class ProjectFactory extends Factory
             'adoption_available' => false,
         ];
     }
+
+    /**
+     * Set the project to published.
+     */
+    public function published(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'status' => ProjectStatus::Published,
+        ]);
+    }
+
+    /**
+     * Make the published project available for adoption.
+     */
+    public function availableForAdoption(): static
+    {
+        return $this->published()->state(fn (array $attributes): array => [
+            'adoption_available' => true,
+        ]);
+    }
+
+    /**
+     * Make this a new project revived from another project.
+     */
+    public function revived(): static
+    {
+        return $this->state(fn (array $attributes): array => [
+            'parent_project_id' => Project::factory()->published(),
+        ]);
+    }
 }
