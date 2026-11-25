@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdoptionRequestController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectImageController;
+use App\Http\Controllers\ProjectUpdateController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
@@ -31,6 +32,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/my/projects/{project}/images/{image}', [ProjectImageController::class, 'destroy'])
         ->scopeBindings()
         ->name('my.projects.images.destroy');
+
+    Route::post('/my/projects/{project}/updates', [ProjectUpdateController::class, 'store'])
+        ->name('my.projects.updates.store');
+    Route::put('/my/projects/{project}/updates/{update}', [ProjectUpdateController::class, 'update'])
+        ->scopeBindings()
+        ->name('my.projects.updates.update');
+    Route::delete('/my/projects/{project}/updates/{update}', [ProjectUpdateController::class, 'destroy'])
+        ->scopeBindings()
+        ->name('my.projects.updates.destroy');
 
     Route::post('/projects/{project}/adoption-requests', [AdoptionRequestController::class, 'store'])
         ->name('projects.adoption-requests.store');

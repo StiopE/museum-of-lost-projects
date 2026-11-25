@@ -51,6 +51,14 @@ class ProjectPolicy
     }
 
     /**
+     * Determine whether the user can manage the project's progress updates.
+     */
+    public function manageUpdates(User $user, Project $project): bool
+    {
+        return $project->user_id === $user->id;
+    }
+
+    /**
      * Determine whether the user can publish the project.
      */
     public function publish(User $user, Project $project): bool

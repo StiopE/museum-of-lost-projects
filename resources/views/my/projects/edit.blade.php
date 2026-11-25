@@ -26,6 +26,35 @@
             <p class="mt-4 text-sm text-zinc-600">This project has reached the six image limit.</p>
         @endif
     </section>
+    <section class="mt-6 rounded-2xl border bg-white p-6 sm:p-8">
+        <h2 class="text-xl font-bold">Progress updates</h2>
+        <p class="mt-2 text-sm text-zinc-600">Share milestones and what you have learned as you continue the project.</p>
+        <form method="POST" action="{{ route('my.projects.updates.store', $project) }}" class="mt-5 space-y-3">@csrf
+            <label for="new-update" class="block font-medium">New update</label>
+            <textarea id="new-update" name="content" rows="4" maxlength="10000" required class="w-full rounded-lg border-stone-300" placeholder="What changed since your last update?">{{ old('content') }}</textarea>
+            @error('content')<p class="text-sm text-red-700">{{ $message }}</p>@enderror
+            <button class="rounded-lg bg-zinc-900 px-4 py-2 font-semibold text-white">Share update</button>
+        </form>
+        <div class="mt-8 space-y-5">
+            @forelse ($updates as $update)
+                <article class="rounded-xl bg-stone-50 p-4">
+                    <p class="mb-3 text-sm text-zinc-500">{{ $update->created_at->format('F j, Y') }}</p>
+                    <form method="POST" action="{{ route('my.projects.updates.update', [$project, $update]) }}" class="space-y-3">@csrf @method('PUT')
+                        <label class="sr-only" for="update-{{ $update->id }}">Edit progress update</label>
+                        <textarea id="update-{{ $update->id }}" name="updates[{{ $update->id }}][content]" rows="4" maxlength="10000" required class="w-full rounded-lg border-stone-300">{{ old('updates.'.$update->id.'.content', $update->content) }}</textarea>
+                        @error('updates.'.$update->id.'.content')<p class="text-sm text-red-700">{{ $message }}</p>@enderror
+                        <button class="rounded-lg border px-4 py-2 text-sm font-semibold">Save update</button>
+                    </form>
+                    <form method="POST" action="{{ route('my.projects.updates.destroy', [$project, $update]) }}" class="mt-3">@csrf @method('DELETE')<button class="text-sm font-semibold text-red-700">Delete update</button></form>
+                </article>
+            @empty
+                <p class="text-sm text-zinc-600">You have not shared any progress updates yet.</p>
+            @endforelse
+        </div>
+        @if ($updates->hasPages())
+            <div class="mt-6">{{ $updates->links() }}</div>
+        @endif
+    </section>
     @if ($project->status->value !== 'published')
         <form method="POST" action="{{ route('my.projects.publish', $project) }}" class="mt-6 rounded-2xl border bg-white p-6">@csrf @method('PATCH')<h2 class="text-xl font-bold">Publish this project</h2><p class="mt-2 text-sm text-zinc-600">Publishing makes the story visible in the public museum.</p><label class="mt-4 flex items-center gap-3"><input type="checkbox" name="adoption_available" value="1" class="rounded border-stone-300">Allow people to request adopting this idea</label><button class="mt-5 rounded-lg bg-amber-700 px-4 py-2 font-semibold text-white">Publish project</button></form>
     @elseif ($project->adoptionRequests->isNotEmpty())

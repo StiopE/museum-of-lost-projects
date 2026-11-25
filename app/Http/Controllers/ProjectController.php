@@ -55,6 +55,10 @@ class ProjectController extends Controller
         return view('projects.show', [
             'project' => $project,
             'adoptionRequest' => $adoptionRequest,
+            'updates' => $project->updates()
+                ->with('author')
+                ->latest()
+                ->paginate(10, ['*'], 'updates_page'),
         ]);
     }
 
@@ -80,10 +84,15 @@ class ProjectController extends Controller
         Gate::authorize('update', $project);
 
         $project->load(['category', 'images', 'adoptionRequests.requester', 'adoptionRequests.revivedProject']);
+        $updates = $project->updates()
+            ->with('author')
+            ->latest()
+            ->paginate(10, ['*'], 'updates_page');
 
         return view('my.projects.edit', [
             'project' => $project,
             'categories' => Category::query()->orderBy('name')->get(),
+            'updates' => $updates,
         ]);
     }
 

@@ -16,6 +16,20 @@
             <section class="rounded-2xl border border-stone-200 bg-white p-6"><h2 class="text-xl font-semibold">{{ $heading }}</h2><p class="mt-3 whitespace-pre-line leading-7 text-zinc-700">{{ $project->{$field} }}</p></section>
         @endforeach
     </div>
+    <section class="mt-12">
+        <h2 class="text-2xl font-bold">Progress updates</h2>
+        @forelse ($updates as $update)
+            <article class="mt-4 rounded-2xl border border-stone-200 bg-white p-6">
+                <p class="text-sm text-zinc-500">{{ $update->author->name }} · {{ $update->created_at->format('F j, Y') }}</p>
+                <p class="mt-3 whitespace-pre-line leading-7 text-zinc-700">{{ $update->content }}</p>
+            </article>
+        @empty
+            <p class="mt-3 text-zinc-600">No progress updates have been shared yet.</p>
+        @endforelse
+        @if ($updates->hasPages())
+            <div class="mt-6">{{ $updates->links() }}</div>
+        @endif
+    </section>
     @if ($project->adoption_available && auth()->id() !== $project->user_id)
         <section class="mt-8 rounded-2xl bg-amber-100 p-6"><h2 class="text-xl font-bold">Give this idea a second life</h2>
             @guest<p class="mt-2">Log in to ask the creator about reviving this project.</p><a class="mt-4 inline-block font-semibold underline" href="{{ route('login') }}">Log in</a>@else
