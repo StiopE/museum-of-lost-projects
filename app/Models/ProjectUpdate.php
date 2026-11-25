@@ -16,6 +16,8 @@ class ProjectUpdate extends Model
 
     /**
      * Get the project this update belongs to.
+     *
+     * @return BelongsTo<Project, $this>
      */
     public function project(): BelongsTo
     {
@@ -24,6 +26,8 @@ class ProjectUpdate extends Model
 
     /**
      * Get the user who wrote this update.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function author(): BelongsTo
     {

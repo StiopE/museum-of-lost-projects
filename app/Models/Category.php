@@ -16,6 +16,8 @@ class Category extends Model
 
     /**
      * Get the projects assigned to this category.
+     *
+     * @return HasMany<Project, $this>
      */
     public function projects(): HasMany
     {

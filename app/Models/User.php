@@ -53,6 +53,8 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 
     /**
      * Get the projects created by the user.
+     *
+     * @return HasMany<Project, $this>
      */
     public function projects(): HasMany
     {
@@ -61,6 +63,8 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 
     /**
      * Get the adoption requests submitted by the user.
+     *
+     * @return HasMany<AdoptionRequest, $this>
      */
     public function adoptionRequests(): HasMany
     {
@@ -75,6 +79,8 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 
     /**
      * Get the project updates written by the user.
+     *
+     * @return HasMany<ProjectUpdate, $this>
      */
     public function projectUpdates(): HasMany
     {
