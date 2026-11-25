@@ -24,6 +24,20 @@
     </div>
 
     <section class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
+        <h2 class="text-xl font-bold">Adoption requests</h2>
+        <p class="mt-2">{{ trans_choice('{0} No requests awaiting your review.|{1} One request awaits your review.|[2,*] :count requests await your review.', $pendingRequestCount) }}</p>
+        @if ($latestSentRequest)
+            <p class="mt-2 text-zinc-600">
+                Your request for {{ $latestSentRequest->project->status->value === 'published' ? $latestSentRequest->project->title : 'an archived project' }} is {{ $latestSentRequest->status->value }}.
+                @if ($latestSentRequest->revived_project_id)
+                    <a class="font-semibold text-amber-800" href="{{ route('my.projects.edit', $latestSentRequest->revived_project_id) }}">Manage revived project →</a>
+                @endif
+            </p>
+        @endif
+        <a class="mt-3 inline-block font-semibold text-amber-800" href="{{ route('my.adoption-requests.index') }}">View adoption requests →</a>
+    </section>
+
+    <section class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
         <div class="flex flex-wrap items-end justify-between gap-3">
             <div>
                 <h2 class="text-xl font-bold">Your recent projects</h2>

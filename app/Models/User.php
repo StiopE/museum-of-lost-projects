@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -64,6 +65,12 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     public function adoptionRequests(): HasMany
     {
         return $this->hasMany(AdoptionRequest::class);
+    }
+
+    /** @return HasManyThrough<AdoptionRequest, Project, $this> */
+    public function receivedAdoptionRequests(): HasManyThrough
+    {
+        return $this->hasManyThrough(AdoptionRequest::class, Project::class);
     }
 
     /**

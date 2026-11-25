@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AdoptionRequestStatus;
 use App\Enums\ProjectStatus;
 use App\Http\Requests\PublishProjectRequest;
 use App\Http\Requests\StoreProjectRequest;
@@ -34,6 +35,8 @@ class ProjectController extends Controller
 
         return view('dashboard', [
             'projectCounts' => $projectCounts,
+            'pendingRequestCount' => $user->receivedAdoptionRequests()->where('adoption_requests.status', AdoptionRequestStatus::Pending)->count(),
+            'latestSentRequest' => $user->adoptionRequests()->with('project')->latest('updated_at')->orderByDesc('id')->first(),
             'projects' => $projects,
         ]);
     }

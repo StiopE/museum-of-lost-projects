@@ -57,8 +57,35 @@
     </section>
     @if ($project->status->value !== 'published')
         <form method="POST" action="{{ route('my.projects.publish', $project) }}" class="mt-6 rounded-2xl border bg-white p-6">@csrf @method('PATCH')<h2 class="text-xl font-bold">Publish this project</h2><p class="mt-2 text-sm text-zinc-600">Publishing makes the story visible in the public museum.</p><label class="mt-4 flex items-center gap-3"><input type="checkbox" name="adoption_available" value="1" class="rounded border-stone-300">Allow people to request adopting this idea</label><button class="mt-5 rounded-lg bg-amber-700 px-4 py-2 font-semibold text-white">Publish project</button></form>
-    @elseif ($project->adoptionRequests->isNotEmpty())
-        <section class="mt-6 rounded-2xl border bg-white p-6"><h2 class="text-xl font-bold">Adoption requests</h2><div class="mt-4 space-y-4">@foreach ($project->adoptionRequests as $request)<article class="rounded-xl bg-stone-50 p-4"><div class="flex flex-wrap justify-between gap-2"><p class="font-semibold">{{ $request->requester->name }}</p><span class="text-sm capitalize text-zinc-500">{{ $request->status->value }}</span></div><p class="mt-2 whitespace-pre-line text-zinc-700">{{ $request->message }}</p>@if ($request->status->value === 'pending')<div class="mt-4 flex gap-3"><form method="POST" action="{{ route('my.adoption-requests.approve', $request) }}">@csrf @method('PATCH')<button class="rounded-lg bg-green-700 px-4 py-2 text-sm font-semibold text-white">Approve</button></form><form method="POST" action="{{ route('my.adoption-requests.reject', $request) }}">@csrf @method('PATCH')<button class="rounded-lg border px-4 py-2 text-sm font-semibold">Reject</button></form></div>@endif</article>@endforeach</div></section>
+    @endif
+    @if ($project->adoptionRequests->isNotEmpty())
+        <section class="mt-6 rounded-2xl border bg-white p-6">
+            <h2 class="text-xl font-bold">Adoption requests</h2>
+            <div class="mt-4 space-y-4">
+                @foreach ($project->adoptionRequests as $request)
+                    <article id="request-{{ $request->id }}" class="rounded-xl bg-stone-50 p-4">
+                        <p class="font-semibold">{{ $request->requester->name }} · {{ ucfirst($request->status->value) }}</p>
+                        <p class="mt-2 whitespace-pre-line text-zinc-700">{{ $request->message }}</p>
+                        @if ($request->status->value === 'pending' && auth()->id() === $project->user_id)
+                            <div class="mt-4 flex gap-3">
+                                @if ($project->adoption_available)
+                                    <form method="POST" action="{{ route('my.adoption-requests.approve', $request) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button class="rounded-lg bg-green-700 px-4 py-2 text-sm font-semibold text-white">Approve</button>
+                                    </form>
+                                @endif
+                                <form method="POST" action="{{ route('my.adoption-requests.reject', $request) }}">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button class="rounded-lg border px-4 py-2 text-sm font-semibold">Reject</button>
+                                </form>
+                            </div>
+                        @endif
+                    </article>
+                @endforeach
+            </div>
+        </section>
     @endif
     @if ($project->status->value !== 'archived')<form method="POST" action="{{ route('my.projects.archive', $project) }}" class="mt-6 rounded-2xl border bg-white p-6">@csrf @method('PATCH')<h2 class="text-lg font-bold">Archive project</h2><p class="mt-1 text-sm text-zinc-600">Remove it from public browsing while keeping it in your workspace.</p><button class="mt-4 rounded-lg border px-4 py-2 font-medium">Archive</button></form>@endif
     @can('delete', $project)<form method="POST" action="{{ route('my.projects.destroy', $project) }}" class="mt-6 rounded-2xl border border-red-200 bg-white p-6">@csrf @method('DELETE')<h2 class="text-lg font-bold text-red-800">Delete project</h2><p class="mt-1 text-sm text-zinc-600">Permanently remove this project and its related records.</p><button class="mt-4 rounded-lg bg-red-700 px-4 py-2 font-medium text-white" onclick="return confirm('Permanently delete this project?')">Delete project</button></form>@endcan

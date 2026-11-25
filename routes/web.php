@@ -46,6 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('projects.adoption-requests.store');
 
     Route::prefix('my/adoption-requests')->name('my.adoption-requests.')->controller(AdoptionRequestController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
         Route::patch('/{adoptionRequest}/approve', 'approve')->name('approve');
         Route::patch('/{adoptionRequest}/reject', 'reject')->name('reject');
         Route::patch('/{adoptionRequest}/cancel', 'cancel')->name('cancel');

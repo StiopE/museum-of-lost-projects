@@ -176,3 +176,35 @@ test('an explorer cannot submit a second pending request for the same project', 
     $response->assertSessionHasErrors('message');
     $this->assertDatabaseCount('adoption_requests', 1);
 });
+
+test('the dashboard leads creators and explorers to their own requests and the resulting revival', function () {
+    $request = AdoptionRequest::factory()->create();
+    $other = AdoptionRequest::factory()->create();
+    $creator = $request->project->creator;
+    $explorer = $request->requester;
+
+    $this->get(route('my.adoption-requests.index'))->assertRedirectToRoute('login');
+    $this->actingAs($creator)->get(route('dashboard'))
+        ->assertSeeText('One request awaits your review.')
+        ->assertSee(route('my.adoption-requests.index'), false);
+    $this->get(route('my.adoption-requests.index'))
+        ->assertSeeText($request->message)
+        ->assertSee(route('my.projects.edit', $request->project).'#request-'.$request->id, false)
+        ->assertDontSeeText($other->message);
+    $this->patch(route('my.adoption-requests.approve', $request))->assertRedirect();
+    $editLink = route('my.projects.edit', $request->refresh()->revived_project_id);
+
+    $this->actingAs($explorer)->get(route('dashboard'))->assertSee($editLink, false);
+    $this->get(route('my.adoption-requests.index'))->assertSeeText('Approved')
+        ->assertSee($editLink, false)->assertDontSeeText($other->message);
+});
+
+test('an explorer can withdraw from the workspace after the original is archived', function () {
+    $request = AdoptionRequest::factory()->create();
+    $this->actingAs($request->project->creator)->patch(route('my.projects.archive', $request->project));
+    $this->actingAs($request->requester)->get(route('my.adoption-requests.index'))
+        ->assertSeeText('Archived project')->assertDontSeeText($request->project->title)
+        ->assertSee(route('my.adoption-requests.cancel', $request), false);
+    $this->patch(route('my.adoption-requests.cancel', $request))->assertRedirectToRoute('my.adoption-requests.index');
+    expect($request->refresh()->status)->toBe(AdoptionRequestStatus::Cancelled);
+});
