@@ -20,7 +20,10 @@ class DatabaseSeeder extends Seeder
         ]);
 
         if (app()->environment(['local', 'testing'])) {
-            $this->call(MuseumExhibitSeeder::class);
+            $this->call([
+                MuseumExhibitSeeder::class,
+                MuseumCommunitySeeder::class,
+            ]);
         }
     }
 }

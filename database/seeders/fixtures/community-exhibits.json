@@ -1,0 +1,255 @@
+[
+    {
+        "creator": "Iris",
+        "category": "art-design",
+        "days_ago": 90,
+        "open": false,
+        "details": {
+            "title": "Tide Table Loom",
+            "description": "A weaving draft that turns a week of harbour tides into a blue-and-rust border.",
+            "story": "I drew the first repeat on the back of a ferry receipt. High water made a wide stripe, low water a narrow one. The corner of that receipt still has the coffee ring I used to trace the first curve.",
+            "original_goal": "Weave a hand towel for each month of the fishing season.",
+            "abandonment_reason": "The first towel took three Saturdays. By March I was still weaving January.",
+            "what_went_wrong": "I made every centimetre of height a new row and spent most of the time changing thread.",
+            "what_could_be_improved": "Keep the turning points and let the plain weave carry the hours between them."
+        },
+        "updates": [
+            "Found the original graph paper. The blue marks count warp threads, not hours.",
+            "Added the two-colour draft. The short rust floats were the only ones that survived the wash."
+        ],
+        "image": "tide-loom.png",
+        "caption": "Two-colour weave draft, with six tide peaks picked out in rust."
+    },
+    {
+        "creator": "Ada",
+        "category": "business-ideas",
+        "days_ago": 64,
+        "open": true,
+        "details": {
+            "title": "Borrow a Bench",
+            "description": "A ticket book for borrowing an empty workbench by the hour.",
+            "story": "Three neighbours had tools and nowhere to use them. The cabinetmaker downstairs had the opposite problem. On Fridays we carried a tin of numbered tickets between the two buildings.",
+            "original_goal": "Pay for the cabinetmaker’s heat and give beginners a place to learn.",
+            "abandonment_reason": "The cabinetmaker moved, and none of our bookings covered the price of a new room.",
+            "what_went_wrong": "We sold hour-long slots, but cleaning glue brushes and sweeping up took nearly half of each one.",
+            "what_could_be_improved": "Try a single Saturday session with a shared cleanup at the end."
+        },
+        "updates": [
+            "I found the ticket stubs. Nine of the first twelve bookings were for exactly the same shelf repair."
+        ]
+    },
+    {
+        "creator": "Luz",
+        "category": "writing-stories",
+        "days_ago": 59,
+        "open": true,
+        "details": {
+            "title": "The Third Drawer",
+            "description": "Nine unfinished stories told through the objects left in a kitchen drawer.",
+            "story": "The first narrator was a bent whisk. It knew which cakes had fallen and which birthdays had been missed. By the time I reached the spare key, I had drawn three generations of the family on butcher paper.",
+            "original_goal": "Tell one family history without letting a person narrate it.",
+            "abandonment_reason": "The family tree became a second manuscript and I lost track of the first.",
+            "what_went_wrong": "The objects all sounded like me. Even the oven mitt had an opinion about the mortgage.",
+            "what_could_be_improved": "Start with the key and let it report only the doors it actually opened."
+        },
+        "updates": [
+            "Read the whisk story aloud. Cutting the last paragraph made the missing birthday much clearer."
+        ]
+    },
+    {
+        "creator": "Tomas",
+        "category": "inventions",
+        "days_ago": 51,
+        "open": true,
+        "details": {
+            "title": "Rain Ticket Press",
+            "description": "A pavement rain gauge that prints a tiny receipt after a shower.",
+            "story": "I wanted the first visitor after rain to find a slip of paper saying how much had fallen. An old till printer fit inside a biscuit tin, with an upturned funnel bolted to the lid.",
+            "original_goal": "Build a rain gauge that could leave a paper record without a phone.",
+            "abandonment_reason": "The rolls curled up in the damp long before the tin collected enough rain.",
+            "what_went_wrong": "I waterproofed the electronics and left a generous slot for water beside the paper feed.",
+            "what_could_be_improved": "Put the gauge outside and hand the readings to a printer indoors."
+        },
+        "updates": [
+            "The funnel still measures within a teaspoon of the kitchen jug. The tin is another story."
+        ]
+    },
+    {
+        "creator": "Nell",
+        "category": "software-apps",
+        "days_ago": 44,
+        "open": true,
+        "details": {
+            "title": "Breadcrumb Radio",
+            "description": "A walking tour that plays a neighbour’s recording when you reach the right corner.",
+            "story": "At our first test the fishmonger told a story about a blackout. The listeners heard it a block early, beside a bright new pharmacy. Everybody remembered the pharmacy instead.",
+            "original_goal": "Let a short walk unfold entirely through local voices.",
+            "abandonment_reason": "We spent our last recording afternoon arguing with the location trigger.",
+            "what_went_wrong": "Two parallel streets shared a GPS radius. Narrowing the circle made the recordings disappear indoors.",
+            "what_could_be_improved": "Let the listener trigger each story by matching a detail on a printed card."
+        },
+        "updates": [
+            "Recovered four clean audio takes. The handwritten route includes a blue drainpipe that is still there."
+        ]
+    },
+    {
+        "creator": "Noa",
+        "category": "writing-stories",
+        "days_ago": 39,
+        "open": false,
+        "details": {
+            "title": "Window Seat Index",
+            "description": "A pocket index of things visible for less than a second from a train.",
+            "story": "For a winter commute I kept one index card per window. A white horse made three appearances. A painted moon above a garage door appeared once, then scaffolding covered it for good.",
+            "original_goal": "Make a field guide that another passenger could read on the same journey.",
+            "abandonment_reason": "The timetable changed and my train began running in the dark.",
+            "what_went_wrong": "I had written mile counts in one direction and minutes in the other.",
+            "what_could_be_improved": "Pick a single daylight trip and put the landmarks in the order they appear."
+        },
+        "updates": []
+    },
+    {
+        "creator": "Iris",
+        "category": "art-design",
+        "days_ago": 32,
+        "open": true,
+        "details": {
+            "title": "Ink Left on the Roller",
+            "description": "A miniature print edition made entirely from the ink left after another print job.",
+            "story": "I rolled the leftover green onto onion-skin paper and got the shape of a broken coastline. Other printers began saving their final pulls for me in a biscuit box.",
+            "original_goal": "Make an edition of twenty maps from scraps other printers threw out.",
+            "abandonment_reason": "Two sheets stuck together every time I tried to bind the book.",
+            "what_went_wrong": "The pages looked dry but the thick bands of ink needed another week.",
+            "what_could_be_improved": "Keep each print loose, with its own slip of tracing paper."
+        },
+        "updates": [
+            "Unpacked the biscuit box. Three clean prints survived between the old shopping lists."
+        ]
+    },
+    {
+        "creator": "Ada",
+        "category": "business-ideas",
+        "days_ago": 27,
+        "open": true,
+        "details": {
+            "title": "The Soup Shelf",
+            "description": "A library of stockpots for neighbours cooking one very large meal.",
+            "story": "The first borrower made broth for forty people after a choir rehearsal. She brought back the pot polished, with the recipe tucked under the lid. We kept the recipe and lost track of the lid.",
+            "original_goal": "Share six oversized pots from one shop shelf.",
+            "abandonment_reason": "Nobody could collect a heavy pot before the shop closed on weekdays.",
+            "what_went_wrong": "Our sign-out cards tracked the pot and missed the lid, ladle and crate.",
+            "what_could_be_improved": "Start with two complete kits. Give each kit its own crate and a Sunday return hour."
+        },
+        "updates": [
+            "The choir sent another recipe. Their note says the small pot serves twelve if nobody minds seconds."
+        ]
+    },
+    {
+        "creator": "Nell",
+        "category": "software-apps",
+        "days_ago": 22,
+        "open": false,
+        "details": {
+            "title": "A Pantry in Pencil",
+            "description": "A recipe search prototype that understood the names on my grandmother’s jars.",
+            "story": "Her notes called chickpeas little buttons. I wrote a lookup table for the buttons, a second for the butter beans, and soon had a program that could cook in only one kitchen.",
+            "original_goal": "Find a dinner from the handwritten labels in a cupboard.",
+            "abandonment_reason": "I could never explain how to add another kitchen without rebuilding the dictionary.",
+            "what_went_wrong": "A single label sometimes named the jar itself and sometimes what used to be in it.",
+            "what_could_be_improved": "Ask the cook for one example dish when they add an ingredient."
+        },
+        "updates": [
+            "Found a label with three names crossed out. It belongs in the test cases."
+        ]
+    },
+    {
+        "creator": "Noa",
+        "category": "art-design",
+        "days_ago": 17,
+        "open": false,
+        "details": {
+            "title": "Pocket Loom Almanac",
+            "description": "A postcard loom with one short weaving repeat for each change of tide.",
+            "story": "Iris sent a photograph of her January towel. I cut twelve slots in a postcard and tried just the part where the tide turned. The first small sample took the length of a kettle boil.",
+            "original_goal": "Make the tide draft small enough to finish on the ferry.",
+            "abandonment_reason": "My first card bent in the middle as soon as I tightened the warp.",
+            "what_went_wrong": "The long float on the back snagged on a coat button.",
+            "what_could_be_improved": "I am testing folded card and a shorter float before drawing the next harbour."
+        },
+        "updates": [
+            "Folded two ticket stubs around the warp. The card stayed flat for the whole crossing.",
+            "The second sample fits in an envelope. I posted it back to Iris with the draft folded inside."
+        ],
+        "origin": "Tide Table Loom",
+        "proposal": "I can test one tide repeat on a postcard loom and send you the sample."
+    },
+    {
+        "creator": "Tomas",
+        "category": "inventions",
+        "days_ago": 11,
+        "open": true,
+        "details": {
+            "title": "The Umbrella Drying Rack",
+            "description": "A folding drip rack that almost fit under the counter of a six-seat café.",
+            "story": "The owner measured the counter for me three times. We forgot to measure the umbrellas. On the first rainy morning the longest handle caught the till drawer.",
+            "original_goal": "Get wet umbrellas out of the doorway without making a puddle at the counter.",
+            "abandonment_reason": "The café changed hands before I could try the second set of hooks.",
+            "what_went_wrong": "I built every slot for the same handle height.",
+            "what_could_be_improved": "Angle the slots and make the drip tray removable from the side."
+        },
+        "updates": []
+    },
+    {
+        "creator": "Luz",
+        "category": "art-design",
+        "days_ago": 8,
+        "open": true,
+        "details": {
+            "title": "The Platform Minute",
+            "description": "A two-ink platform score in which every passing train leaves one mark.",
+            "story": "I stood on the footbridge with a kitchen timer and two pencils. Local trains got a teal mark, expresses an orange one. When two passed at once, my pencil marks touched.",
+            "original_goal": "Print one hour of station life on a single sheet.",
+            "abandonment_reason": "I promised a whole week of observations before I had finished the first hour.",
+            "what_went_wrong": "The first design made a quiet minute indistinguishable from a minute I missed.",
+            "what_could_be_improved": "Give every minute a printed slot and mark a missed observation in pencil."
+        },
+        "updates": [
+            "I have set the first hour in a six-row grid. The empty slots finally read as silence."
+        ],
+        "image": "platform-minute.png",
+        "caption": "The first hour of observations. Teal marks local trains, orange marks expresses."
+    },
+    {
+        "creator": "Ada",
+        "category": "business-ideas",
+        "days_ago": 5,
+        "open": true,
+        "details": {
+            "title": "Return to Sender Club",
+            "description": "A trial postcard subscription that paid for the stamp on the reply.",
+            "story": "Six neighbours got the same question in the post. Four wrote back. The fifth walked over with her answer because she wanted to see who was asking.",
+            "original_goal": "Fund a monthly exchange for people who liked writing letters.",
+            "abandonment_reason": "I could pay for the outgoing post or the return post, but rarely both.",
+            "what_went_wrong": "A subscription made a casual invitation feel like an assignment.",
+            "what_could_be_improved": "Run one exchange at the library and sell the leftover cards individually."
+        },
+        "updates": []
+    },
+    {
+        "creator": "Luz",
+        "category": "writing-stories",
+        "days_ago": 3,
+        "open": false,
+        "details": {
+            "title": "Carbon Paper Weather",
+            "description": "Working notes for a story told in the faint third copy of a weather report.",
+            "story": "I found an envelope of carbon copies in a desk at a flea market. The pressure of the typist’s hand seemed to change with the weather.",
+            "original_goal": "Write a short piece that could be read in any order.",
+            "abandonment_reason": "The pages still need a beginning that earns the last image.",
+            "what_went_wrong": "I kept describing the paper and forgetting the person at the typewriter.",
+            "what_could_be_improved": "Try a version told by the person who collects the reports."
+        },
+        "updates": [],
+        "draft": true
+    }
+]
