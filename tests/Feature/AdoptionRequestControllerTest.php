@@ -242,3 +242,33 @@ test('a rolled back adoption request leaves no email waiting for delivery', func
     $this->assertDatabaseCount('adoption_requests', 0);
     expect(Mail::mailer('array')->getSymfonyTransport()->messages())->toBeEmpty();
 });
+
+test('approval emails the revival link only to the adopter and informs the remaining pending explorers', function () {
+    $chosen = AdoptionRequest::factory()->create();
+    $other = AdoptionRequest::factory()->for($chosen->project)->create();
+    AdoptionRequest::factory()->for($chosen->project)->create(['status' => AdoptionRequestStatus::Cancelled]);
+
+    $this->actingAs($chosen->project->creator)->patch(route('my.adoption-requests.approve', $chosen))->assertRedirect();
+    $this->patch(route('my.adoption-requests.approve', $chosen))->assertSessionHasErrors('adoption_request');
+
+    $emails = Mail::mailer('array')->getSymfonyTransport()->messages()
+        ->map(fn ($sent) => $sent->getOriginalMessage())
+        ->keyBy(fn ($email) => $email->getTo()[0]->getAddress());
+    $draftUrl = route('my.projects.edit', $chosen->refresh()->revived_project_id);
+    expect($emails->keys()->all())->toEqualCanonicalizing([$chosen->requester->email, $other->requester->email]);
+    expect($emails[$chosen->requester->email]->getHtmlBody())->toContain($draftUrl);
+    expect($emails[$other->requester->email]->getHtmlBody())
+        ->toContain(route('my.adoption-requests.index'))->not->toContain($draftUrl);
+    expect(Mail::mailer('array')->getSymfonyTransport()->messages())->toHaveCount(2);
+});
+
+test('rejecting an archived project request emails its requester without exposing the private title', function () {
+    $request = AdoptionRequest::factory()->create();
+    $this->actingAs($request->project->creator)->patch(route('my.projects.archive', $request->project));
+    $this->patch(route('my.adoption-requests.reject', $request))->assertRedirect();
+
+    $email = Mail::mailer('array')->getSymfonyTransport()->messages()->sole()->getOriginalMessage();
+    expect($email->getTo()[0]->getAddress())->toBe($request->requester->email)
+        ->and($email->getSubject())->toBe('Adoption request declined')
+        ->and($email->getHtmlBody())->toContain(route('my.adoption-requests.index'))->not->toContain($request->project->title);
+});

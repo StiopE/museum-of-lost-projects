@@ -7,8 +7,10 @@ use App\Enums\ProjectStatus;
 use App\Models\AdoptionRequest;
 use App\Models\Project;
 use App\Models\User;
+use App\Notifications\AdoptionRequestDecision;
 use App\Notifications\AdoptionRequestReceived;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 class AdoptionRequestService
@@ -90,16 +92,26 @@ class AdoptionRequestService
 
             $project->update(['adoption_available' => false]);
 
-            $project->adoptionRequests()
-                ->where('id', '!=', $adoptionRequest->getKey())
-                ->where('status', AdoptionRequestStatus::Pending)
-                ->update([
-                    'status' => AdoptionRequestStatus::Rejected,
-                    'responded_at' => now(),
-                ]);
+            $adoptionRequest->requester->notify(new AdoptionRequestDecision($project->title, $revivedProject->id));
+            $this->rejectRemainingRequests($project);
 
             return $revivedProject;
         }, attempts: 3);
+    }
+
+    private function rejectRemainingRequests(Project $project): void
+    {
+        $pending = AdoptionRequest::query()->whereBelongsTo($project)->where('status', AdoptionRequestStatus::Pending);
+
+        User::query()->whereIn('id', (clone $pending)->select('user_id'))
+            ->chunkById(100, function ($requesters) use ($project): void {
+                Notification::send($requesters, new AdoptionRequestDecision($project->title));
+            });
+
+        $pending->update([
+            'status' => AdoptionRequestStatus::Rejected,
+            'responded_at' => now(),
+        ]);
     }
 
     /**
@@ -124,7 +136,7 @@ class AdoptionRequestService
     private function resolve(AdoptionRequest $adoptionRequest, AdoptionRequestStatus $status): void
     {
         DB::transaction(function () use ($adoptionRequest, $status): void {
-            Project::query()
+            $project = Project::query()
                 ->whereKey($adoptionRequest->project_id)
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -140,6 +152,11 @@ class AdoptionRequestService
                 'status' => $status,
                 'responded_at' => now(),
             ]);
+
+            if ($status === AdoptionRequestStatus::Rejected) {
+                $title = $project->status === ProjectStatus::Published ? $project->title : null;
+                $adoptionRequest->requester->notify(new AdoptionRequestDecision($title));
+            }
         }, attempts: 3);
     }
 
