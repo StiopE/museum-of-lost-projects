@@ -1,12 +1,16 @@
 <x-layouts::auth :title="__('Email verification')">
     <div class="mt-4 flex flex-col gap-6">
         <flux:text class="text-center">
-            {{ __('Please verify your email address by clicking on the link we just emailed to you.') }}
+            @if (app()->environment('local') && config('mail.default') === 'log')
+                {{ __('Local mail is written to the application log. Open the latest verification message for your address in storage/logs/laravel.log (the default log file) and follow its verification link.') }}
+            @else
+                {{ __('Please verify your email address by clicking on the link we just emailed to you.') }}
+            @endif
         </flux:text>
 
         @if (session('status') == 'verification-link-sent')
             <flux:text class="text-center font-medium !dark:text-green-400 !text-green-600">
-                {{ __('A new verification link has been sent to the email address you provided during registration.') }}
+                {{ __('A new verification message is ready.') }}
             </flux:text>
         @endif
 
