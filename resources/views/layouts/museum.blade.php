@@ -8,12 +8,14 @@
 </head>
 <body class="min-h-screen bg-stone-50 text-zinc-900">
     <header class="border-b border-stone-200 bg-white">
-        <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <nav class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
             <a href="{{ route('home') }}" class="font-bold">Museum of Failed Projects</a>
-            <div class="flex items-center gap-5 text-sm font-medium">
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm font-medium">
                 <a href="{{ route('projects.index') }}" class="hover:text-amber-700">Explore</a>
                 @auth
+                    <a href="{{ route('dashboard') }}" class="hover:text-amber-700">Dashboard</a>
                     <a href="{{ route('my.projects.index') }}" class="hover:text-amber-700">My Projects</a>
+                    <a href="{{ route('profile.edit') }}" class="hover:text-amber-700">Account settings</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="hover:text-amber-700">Log out</button>

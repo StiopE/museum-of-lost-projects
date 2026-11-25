@@ -53,3 +53,13 @@ test('the dashboard shows the users project counts and recent work', function ()
         ->assertSeeText('A project in progress')
         ->assertSeeText('A shared museum project');
 });
+
+test('the museum home links members back to their dashboard and account', function () {
+    $this->get(route('home'))->assertDontSee('href="'.route('dashboard').'"', false);
+
+    $this->actingAs(User::factory()->create())
+        ->get(route('home'))
+        ->assertOk()
+        ->assertSee('href="'.route('dashboard').'"', false)
+        ->assertSee('href="'.route('profile.edit').'"', false);
+});
