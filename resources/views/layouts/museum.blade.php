@@ -12,6 +12,7 @@
             <a href="{{ route('home') }}" class="font-bold">Museum of Failed Projects</a>
             <div class="flex flex-wrap items-center gap-x-5 gap-y-3 text-sm font-medium">
                 <a href="{{ route('projects.index') }}" class="hover:text-amber-700">Explore</a>
+                <a href="{{ route('about') }}" class="hover:text-amber-700">About</a>
                 @auth
                     <a href="{{ route('dashboard') }}" class="hover:text-amber-700">Dashboard</a>
                     <a href="{{ route('my.projects.index') }}" class="hover:text-amber-700">My Projects</a>
