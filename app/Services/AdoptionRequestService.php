@@ -7,6 +7,7 @@ use App\Enums\ProjectStatus;
 use App\Models\AdoptionRequest;
 use App\Models\Project;
 use App\Models\User;
+use App\Notifications\AdoptionRequestReceived;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -36,11 +37,15 @@ class AdoptionRequestService
                 ]);
             }
 
-            return $project->adoptionRequests()->create([
+            $request = $project->adoptionRequests()->create([
                 'user_id' => $requester->getKey(),
                 'message' => $message,
                 'status' => AdoptionRequestStatus::Pending,
             ]);
+
+            $project->creator->notify(new AdoptionRequestReceived($project->title, $project->id, $request->id));
+
+            return $request;
         }, attempts: 3);
     }
 

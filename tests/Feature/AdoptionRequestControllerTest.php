@@ -5,6 +5,8 @@ use App\Enums\ProjectStatus;
 use App\Models\AdoptionRequest;
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 test('an explorer can request an available published project', function () {
     $creator = User::factory()->create();
@@ -207,4 +209,36 @@ test('an explorer can withdraw from the workspace after the original is archived
         ->assertSee(route('my.adoption-requests.cancel', $request), false);
     $this->patch(route('my.adoption-requests.cancel', $request))->assertRedirectToRoute('my.adoption-requests.index');
     expect($request->refresh()->status)->toBe(AdoptionRequestStatus::Cancelled);
+});
+
+test('a submitted proposal emails only its creator with a link to the request', function () {
+    $project = Project::factory()->availableForAdoption()->create();
+    $explorer = User::factory()->create();
+    $url = route('projects.adoption-requests.store', $project);
+    $this->actingAs($explorer)->post($url, ['message' => 'I can build a smaller prototype.'])->assertRedirect();
+    $this->post($url, ['message' => 'A duplicate proposal.'])->assertSessionHasErrors('message');
+
+    $request = $project->adoptionRequests()->sole();
+    $mail = Mail::mailer('array')->getSymfonyTransport()->messages()->sole()->getOriginalMessage();
+    expect($mail->getTo())->toHaveCount(1)
+        ->and($mail->getTo()[0]->getAddress())->toBe($project->creator->email)
+        ->and($mail->getSubject())->toContain($project->title)
+        ->and($mail->getHtmlBody())->toContain(route('my.projects.edit', $project).'#request-'.$request->id);
+});
+
+test('a rolled back adoption request leaves no email waiting for delivery', function () {
+    $project = Project::factory()->availableForAdoption()->create();
+    $explorer = User::factory()->create();
+
+    DB::beginTransaction();
+    try {
+        $this->actingAs($explorer)->post(route('projects.adoption-requests.store', $project), [
+            'message' => 'I can revive the prototype.',
+        ])->assertRedirect();
+    } finally {
+        DB::rollBack();
+    }
+
+    $this->assertDatabaseCount('adoption_requests', 0);
+    expect(Mail::mailer('array')->getSymfonyTransport()->messages())->toBeEmpty();
 });
