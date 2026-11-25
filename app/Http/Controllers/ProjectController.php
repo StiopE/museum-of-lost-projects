@@ -27,7 +27,8 @@ class ProjectController extends Controller
 
         $projects = $user->projects()
             ->with('category')
-            ->latest()
+            ->latest('updated_at')
+            ->orderByDesc('id')
             ->limit(5)
             ->get();
 

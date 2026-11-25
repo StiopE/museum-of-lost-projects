@@ -63,3 +63,20 @@ test('the museum home links members back to their dashboard and account', functi
         ->assertSee('href="'.route('dashboard').'"', false)
         ->assertSee('href="'.route('profile.edit').'"', false);
 });
+
+test('editing an older project brings it back into the five recent projects', function () {
+    $creator = User::factory()->create();
+    $older = Project::factory()->for($creator, 'creator')->create([
+        'created_at' => now()->subMonth(),
+        'updated_at' => now()->subMonth(),
+    ]);
+    Project::factory()->count(5)->for($creator, 'creator')->create([
+        'created_at' => now()->subDay(),
+        'updated_at' => now()->subDay(),
+    ]);
+
+    $older->update(['title' => 'New plans for the sky atlas']);
+
+    $this->actingAs($creator)->get(route('dashboard'))
+        ->assertViewHas('projects', fn ($projects) => $projects->count() === 5 && $projects->first()->is($older));
+});
