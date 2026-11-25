@@ -6,6 +6,7 @@ use App\Enums\AdoptionRequestStatus;
 use App\Enums\ProjectStatus;
 use App\Http\Requests\PublishProjectRequest;
 use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateAdoptionAvailabilityRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Category;
 use App\Models\Project;
@@ -148,6 +149,18 @@ class ProjectController extends Controller
         ]);
 
         return redirect()->route('my.projects.index')->with('status', 'Project published.');
+    }
+
+    public function updateAdoptionAvailability(UpdateAdoptionAvailabilityRequest $request, Project $project): RedirectResponse
+    {
+        $changed = Project::query()->whereKey($project->id)->where('status', ProjectStatus::Published)
+            ->update(['adoption_available' => $request->boolean('adoption_available')]);
+
+        if (! $changed && $project->fresh()?->status !== ProjectStatus::Published) {
+            return back()->withErrors(['adoption_available' => 'Publish the project before changing its adoption availability.']);
+        }
+
+        return redirect()->route('my.projects.edit', $project)->with('status', 'Adoption availability saved.');
     }
 
     public function archive(Project $project): RedirectResponse

@@ -23,6 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{project}/edit', 'edit')->name('edit');
         Route::put('/{project}', 'update')->name('update');
         Route::patch('/{project}/publish', 'publish')->name('publish');
+        Route::patch('/{project}/adoption-availability', 'updateAdoptionAvailability')->name('adoption-availability');
         Route::patch('/{project}/archive', 'archive')->name('archive');
         Route::delete('/{project}', 'destroy')->name('destroy');
     });

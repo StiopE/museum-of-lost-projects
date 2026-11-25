@@ -57,7 +57,17 @@
     </section>
     @if ($project->status->value !== 'published')
         <form method="POST" action="{{ route('my.projects.publish', $project) }}" class="mt-6 rounded-2xl border bg-white p-6">@csrf @method('PATCH')<h2 class="text-xl font-bold">Publish this project</h2><p class="mt-2 text-sm text-zinc-600">Publishing makes the story visible in the public museum.</p><label class="mt-4 flex items-center gap-3"><input type="checkbox" name="adoption_available" value="1" class="rounded border-stone-300">Allow people to request adopting this idea</label><button class="mt-5 rounded-lg bg-amber-700 px-4 py-2 font-semibold text-white">Publish project</button></form>
+    @else
+        <form method="POST" action="{{ route('my.projects.adoption-availability', $project) }}" class="mt-6 rounded-2xl border bg-white p-6">
+            @csrf
+            @method('PATCH')
+            <h2 class="text-xl font-bold">Adoption availability</h2>
+            <p class="mt-2">{{ $project->adoption_available ? 'This project is accepting requests.' : 'This project is closed to new requests.' }}</p>
+            <input type="hidden" name="adoption_available" value="{{ $project->adoption_available ? '0' : '1' }}">
+            <button class="mt-4 rounded-lg border px-4 py-2 font-semibold">{{ $project->adoption_available ? 'Close to new requests' : 'Open to new requests' }}</button>
+        </form>
     @endif
+    @error('adoption_available')<p class="mt-2 text-sm text-red-700">{{ $message }}</p>@enderror
     @if ($project->adoptionRequests->isNotEmpty())
         <section class="mt-6 rounded-2xl border bg-white p-6">
             <h2 class="text-xl font-bold">Adoption requests</h2>
