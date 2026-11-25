@@ -15,6 +15,28 @@ use Illuminate\View\View;
 
 class ProjectController extends Controller
 {
+    public function dashboard(Request $request): View
+    {
+        $user = $request->user();
+
+        $projectCounts = [
+            'total' => $user->projects()->count(),
+            'drafts' => $user->projects()->where('status', ProjectStatus::Draft)->count(),
+            'published' => $user->projects()->where('status', ProjectStatus::Published)->count(),
+        ];
+
+        $projects = $user->projects()
+            ->with('category')
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        return view('dashboard', [
+            'projectCounts' => $projectCounts,
+            'projects' => $projects,
+        ]);
+    }
+
     public function index(Request $request): View
     {
         $categorySlug = $request->query('category');

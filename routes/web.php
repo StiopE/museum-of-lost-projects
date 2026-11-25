@@ -14,7 +14,7 @@ Route::get('/projects/{project}/images/{image}', [ProjectImageController::class,
     ->name('projects.images.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', [ProjectController::class, 'dashboard'])->name('dashboard');
 
     Route::prefix('my/projects')->name('my.projects.')->controller(ProjectController::class)->group(function () {
         Route::get('/', 'myIndex')->name('index');
