@@ -71,7 +71,7 @@ class ProjectController extends Controller
         $adoptionRequest = auth()->check()
             ? $project->adoptionRequests()
                 ->where('user_id', auth()->id())
-                ->latest()
+                ->orderByDesc('id')
                 ->first()
             : null;
 

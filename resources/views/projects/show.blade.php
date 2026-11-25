@@ -30,14 +30,34 @@
             <div class="mt-6">{{ $updates->links() }}</div>
         @endif
     </section>
-    @if ($project->adoption_available && auth()->id() !== $project->user_id)
-        <section class="mt-8 rounded-2xl bg-amber-100 p-6"><h2 class="text-xl font-bold">Give this idea a second life</h2>
-            @guest<p class="mt-2">Log in to ask the creator about reviving this project.</p><a class="mt-4 inline-block font-semibold underline" href="{{ route('login') }}">Log in</a>@else
-                @if ($adoptionRequest?->status->value === 'pending')
-                    <p class="mt-2">Your request is waiting for the creator.</p><form class="mt-4" method="POST" action="{{ route('my.adoption-requests.cancel', $adoptionRequest) }}">@csrf @method('PATCH')<button class="font-semibold underline">Cancel request</button></form>
-                @elseif (!$adoptionRequest || $adoptionRequest->status->value !== 'approved')
-                    <form class="mt-4 space-y-3" method="POST" action="{{ route('projects.adoption-requests.store', $project) }}">@csrf<label class="block text-sm font-medium" for="message">Tell the creator what you would do with it</label><textarea class="w-full rounded-lg border-stone-300" id="message" name="message" rows="4" required>{{ old('message') }}</textarea>@error('message')<p class="text-sm text-red-700">{{ $message }}</p>@enderror<button class="rounded-lg bg-zinc-900 px-4 py-2 text-white">Send adoption request</button></form>
-                @else<p class="mt-2">Your request was approved.</p>@endif
+    @if (($project->adoption_available || $adoptionRequest) && auth()->id() !== $project->user_id)
+        <section class="mt-8 rounded-2xl bg-amber-100 p-6">
+            <h2 class="text-xl font-bold">Give this idea a second life</h2>
+            @guest
+                <p class="mt-2">Log in to ask the creator about reviving this project.</p>
+                <a class="mt-4 inline-block font-semibold underline" href="{{ route('login') }}">Log in</a>
+            @else
+                @if ($adoptionRequest)
+                    <p class="mt-2">Your request is {{ $adoptionRequest->status->value }}.</p>
+                    @if ($adoptionRequest->status->value === 'pending')
+                        <form class="mt-4" method="POST" action="{{ route('my.adoption-requests.cancel', $adoptionRequest) }}">
+                            @csrf
+                            @method('PATCH')
+                            <button class="font-semibold underline">Cancel request</button>
+                        </form>
+                    @elseif ($adoptionRequest->revived_project_id)
+                        <a class="mt-4 inline-block font-semibold underline" href="{{ route('my.projects.edit', $adoptionRequest->revived_project_id) }}">Manage revived project</a>
+                    @endif
+                @endif
+                @if ($project->adoption_available && !in_array($adoptionRequest?->status->value, ['pending', 'approved'], true))
+                    <form class="mt-4 space-y-3" method="POST" action="{{ route('projects.adoption-requests.store', $project) }}">
+                        @csrf
+                        <label class="block text-sm font-medium" for="message">Tell the creator what you would do with it</label>
+                        <textarea class="w-full rounded-lg border-stone-300" id="message" name="message" rows="4" required>{{ old('message') }}</textarea>
+                        @error('message')<p class="text-sm text-red-700">{{ $message }}</p>@enderror
+                        <button class="rounded-lg bg-zinc-900 px-4 py-2 text-white">Send adoption request</button>
+                    </form>
+                @endif
             @endguest
         </section>
     @endif

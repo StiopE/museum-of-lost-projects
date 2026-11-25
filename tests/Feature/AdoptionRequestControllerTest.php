@@ -95,6 +95,22 @@ test('the project creator can approve a request and receive a linked revived dra
     ]);
 });
 
+test('an explorer can reach the revived draft after the original closes to adoption', function () {
+    $request = AdoptionRequest::factory()->create();
+    $this->actingAs($request->project->creator)->patch(route('my.adoption-requests.approve', $request));
+    $request->refresh();
+    $editLink = route('my.projects.edit', $request->revived_project_id);
+
+    $this->actingAs($request->requester)->get(route('projects.show', $request->project))
+        ->assertSeeText('Your request is approved.')
+        ->assertSee('href="'.$editLink.'"', false)
+        ->assertDontSeeText('Send adoption request');
+    $this->get($editLink)->assertOk();
+    $this->get(route('my.projects.index'))->assertSeeText('Revived · draft');
+    $this->actingAs(User::factory()->create())->get(route('projects.show', $request->project))
+        ->assertDontSee($editLink, false);
+});
+
 test('an explorer cannot approve their own adoption request', function () {
     $creator = User::factory()->create();
     $explorer = User::factory()->create();
