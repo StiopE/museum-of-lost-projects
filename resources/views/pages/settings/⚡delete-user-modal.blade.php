@@ -1,8 +1,12 @@
 <?php
 
+use App\Actions\DeleteProjectImageFiles;
 use App\Concerns\PasswordValidationRules;
 use App\Livewire\Actions\Logout;
+use App\Models\ProjectImage;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 new class extends Component {
@@ -19,7 +23,15 @@ new class extends Component {
             'password' => $this->currentPasswordRules(),
         ]);
 
-        tap(Auth::user(), $logout(...))->delete();
+        DB::transaction(function (): void {
+            $user = User::query()->lockForUpdate()->findOrFail(Auth::id());
+            $projects = $user->projects()->lockForUpdate()->pluck('id');
+            $images = ProjectImage::query()->whereIn('project_id', $projects)->get();
+            $user->delete();
+            DeleteProjectImageFiles::afterDeletion($images);
+        });
+
+        $logout();
 
         $this->redirect('/', navigate: true);
     }

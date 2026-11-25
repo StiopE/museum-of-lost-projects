@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\DeleteProjectImageFiles;
 use App\Enums\AdoptionRequestStatus;
 use App\Enums\ProjectStatus;
 use App\Http\Requests\PublishProjectRequest;
@@ -12,6 +13,7 @@ use App\Models\Category;
 use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
@@ -177,9 +179,14 @@ class ProjectController extends Controller
 
     public function destroy(Project $project): RedirectResponse
     {
-        Gate::authorize('delete', $project);
+        DB::transaction(function () use ($project): void {
+            $project = Project::query()->lockForUpdate()->findOrFail($project->id);
+            Gate::authorize('delete', $project);
 
-        $project->delete();
+            $images = $project->images()->get();
+            $project->delete();
+            DeleteProjectImageFiles::afterDeletion($images);
+        });
 
         return redirect()->route('my.projects.index')->with('status', 'Project deleted.');
     }
