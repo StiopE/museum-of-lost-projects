@@ -14,6 +14,10 @@
                 <a href="{{ route('projects.index') }}" class="hover:text-amber-700">Explore</a>
                 @auth
                     <a href="{{ route('my.projects.index') }}" class="hover:text-amber-700">My Projects</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="hover:text-amber-700">Log out</button>
+                    </form>
                 @else
                     <a href="{{ route('login') }}" class="hover:text-amber-700">Log in</a>
                     <a href="{{ route('register') }}" class="rounded-lg bg-zinc-900 px-4 py-2 text-white hover:bg-zinc-700">Join</a>

@@ -125,6 +125,21 @@ test('guests must sign in before opening their project workspace', function () {
         ->assertRedirectToRoute('login');
 });
 
+test('signed-in users can sign out from the museum navigation', function () {
+    $user = User::factory()->create();
+
+    $this->actingAs($user)
+        ->get(route('projects.index'))
+        ->assertOk()
+        ->assertSee('Log out')
+        ->assertSee('action="'.route('logout').'"', false);
+
+    $this->post(route('logout'))
+        ->assertRedirectToRoute('home');
+
+    $this->assertGuest();
+});
+
 test('a creator can publish a project and choose whether it is open for adoption', function () {
     $creator = User::factory()->create();
     $project = Project::factory()->for($creator, 'creator')->create();
