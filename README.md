@@ -32,17 +32,3 @@ All three seeded local accounts use the password `password`.
 | tomas@museum.example.test | Tomas Reed, creator of Rain Ticket Press. |
 
 Creators can publish directly or submit a draft for curator review. A submitted exhibit is private until a curator publishes it. Curators can also return it to draft. Images are ordered by their numeric display order, with older IDs first on ties. A category must be empty before deletion.
-
-## Five-minute presentation
-
-[Download the five slides](output/pdf/museum-presentation.pdf). Before presenting, open two separate browser profiles in the same local installation, signed in as Mara and Tomas. Start with a freshly seeded demo database.
-
-| Time | Slide and action |
-| --- | --- |
-| 0:00–0:30 | **Museum.** Open Rain Ticket Press from the homepage. Explain why the creator stopped and why the project is open to a new owner. |
-| 0:30–1:15 | **Data model.** Point out the creator, category and progress update. A project has many adoption requests. A successful request links the original, the requester and a new project record. |
-| 1:15–3:15 | **Live demo.** As Mara, enter “I’ll keep the gauge outdoors and move the paper roll inside” and send the request. As Tomas, open Dashboard → View adoption requests → Review request on the row from Mara Vale and approve her request. Switch back to Mara, open her sent requests and select Manage revived project. Show its draft status and follow the Revival of link to the original public exhibit. |
-| 3:15–4:20 | **Engineering challenge.** Explain how a transaction and row locks prevent two approvals from creating competing revivals. Name the two foreign keys that connect the records: `projects.parent_project_id` and `adoption_requests.revived_project_id`. Explain who can approve and why requesters cannot approve their own requests. |
-| 4:20–5:00 | **Next step.** Show the curator queue. Explain how private revision notes could help a creator revise a returned submission, and why the notes would need to identify the reviewed version. |
-
-After a rehearsal, use a fresh disposable installation for the graded demo. Approval closes adoption on Rain Ticket Press.
