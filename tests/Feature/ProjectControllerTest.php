@@ -195,3 +195,16 @@ test('only managed published projects can have their availability changed', func
     $this->patch($url, ['adoption_available' => 'unknown'])->assertSessionHasErrors('adoption_available');
     expect($draft->refresh()->adoption_available)->toBeFalse();
 });
+
+test('visitors can combine the adoption and category filters', function () {
+    $category = Category::factory()->create();
+    $open = Project::factory()->for($category)->availableForAdoption()->create();
+    $closed = Project::factory()->for($category)->published()->create();
+    $draft = Project::factory()->for($category)->create(['adoption_available' => true]);
+    $other = Project::factory()->availableForAdoption()->create();
+
+    $this->get(route('projects.index', ['category' => $category->slug, 'adoption' => 'open']))
+        ->assertOk()->assertSeeText($open->title)
+        ->assertDontSeeText($closed->title)->assertDontSeeText($draft->title)->assertDontSeeText($other->title)
+        ->assertSeeText('1 exhibit');
+});

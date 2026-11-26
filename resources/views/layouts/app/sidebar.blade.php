@@ -3,22 +3,22 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
+    <body class="museum-settings min-h-screen">
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.header>
-                <x-app-logo :sidebar="true" href="{{ route('projects.index') }}" wire:navigate />
+                <x-museum-brand />
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
                 <flux:sidebar.group :heading="__('Museum')" class="grid">
-                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
-                    <flux:sidebar.item icon="book-open-text" :href="route('projects.index')" :current="request()->routeIs('projects.*')" wire:navigate>
+                    <flux:sidebar.item icon="book-open-text" :href="route('projects.index')" :current="request()->routeIs('projects.*')">
                         {{ __('Explore museum') }}
                     </flux:sidebar.item>
-                    <flux:sidebar.item icon="folder-git-2" :href="route('my.projects.index')" :current="request()->routeIs('my.projects.*')" wire:navigate>
+                    <flux:sidebar.item icon="folder-git-2" :href="route('my.projects.index')" :current="request()->routeIs('my.projects.*')">
                         {{ __('My Projects') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
@@ -33,6 +33,7 @@
         <flux:header class="lg:hidden">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
+            <x-museum-brand />
             <flux:spacer />
 
             <flux:dropdown position="top" align="end">

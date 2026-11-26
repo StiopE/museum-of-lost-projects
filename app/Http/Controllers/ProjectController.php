@@ -51,11 +51,14 @@ class ProjectController extends Controller
             ? Category::query()->where('slug', $categorySlug)->firstOrFail()
             : null;
 
+        $openOnly = $request->query('adoption') === 'open';
         $projects = Project::query()
             ->where('status', ProjectStatus::Published)
+            ->when($openOnly, fn ($query) => $query->where('adoption_available', true))
             ->when($category, fn ($query) => $query->where('category_id', $category->id))
             ->with(['category', 'creator'])
             ->latest()
+            ->orderByDesc('id')
             ->paginate(12)
             ->withQueryString();
 
@@ -63,6 +66,7 @@ class ProjectController extends Controller
             'projects' => $projects,
             'categories' => Category::query()->orderBy('name')->get(),
             'selectedCategory' => $category,
+            'openOnly' => $openOnly,
         ]);
     }
 

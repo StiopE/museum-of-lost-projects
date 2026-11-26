@@ -28,7 +28,7 @@ test('the dashboard gives a new user useful next steps instead of starter placeh
         ->assertSeeText('Your museum collection starts here')
         ->assertSee(route('my.projects.create'), false)
         ->assertSee(route('projects.index'), false)
-        ->assertSee('<body class="min-h-screen bg-stone-50 text-zinc-900">', false)
+        ->assertSee('aria-label="Museum of Failed Projects home"', false)
         ->assertDontSee('placeholder-pattern');
 });
 
