@@ -77,7 +77,7 @@ class Project extends Model
      */
     public function images(): HasMany
     {
-        return $this->hasMany(ProjectImage::class)->orderBy('sort_order');
+        return $this->hasMany(ProjectImage::class)->orderBy('sort_order')->orderBy('id');
     }
 
     /**

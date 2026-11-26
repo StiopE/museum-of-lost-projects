@@ -10,6 +10,12 @@
                 @foreach ($project->images as $image)
                     <div class="overflow-hidden rounded-xl border">
                         <img src="{{ route('projects.images.show', [$project, $image]) }}" alt="{{ $image->caption ?: $project->title }}" class="h-48 w-full object-cover">
+                        <form method="POST" action="{{ route('my.projects.images.update', [$project, $image]) }}" class="grid gap-2 p-3">@csrf @method('PUT')
+                            <label>Caption <input class="w-full" name="caption" maxlength="255" value="{{ $image->caption }}"></label>
+                            <label>Display order (lowest first) <input type="number" name="sort_order" min="0" max="999" required value="{{ $image->sort_order }}"></label>
+                            @foreach ($errors->getBag('image'.$image->id)->all() as $message)<p role="alert">{{ $message }}</p>@endforeach
+                            <button class="text-link">Save image details</button>
+                        </form>
                         <form method="POST" action="{{ route('my.projects.images.destroy', [$project, $image]) }}" class="p-3">@csrf @method('DELETE')<button class="text-sm font-semibold text-red-700">Remove image</button></form>
                     </div>
                 @endforeach
@@ -55,7 +61,12 @@
             <div class="mt-6">{{ $updates->links() }}</div>
         @endif
     </section>
-    @if ($project->status->value !== 'published')
+    @if ($project->status->value === 'draft')
+        <form method="POST" action="{{ route('my.projects.submit', $project) }}" class="mt-6">@csrf @method('PATCH')<button class="primary-link">Submit for curator review</button></form>
+    @endif
+    @if ($project->status->value === 'submitted')
+        <p class="notice">Submitted for curator review.</p>
+    @elseif ($project->status->value !== 'published')
         <form method="POST" action="{{ route('my.projects.publish', $project) }}" class="mt-6 rounded-2xl border bg-white p-6">@csrf @method('PATCH')<h2 class="text-xl font-bold">Publish this project</h2><p class="mt-2 text-sm text-zinc-600">Publishing makes the story visible in the public museum.</p><label class="mt-4 flex items-center gap-3"><input type="checkbox" name="adoption_available" value="1" class="rounded border-stone-300">Allow people to request adopting this idea</label><button class="mt-5 rounded-lg bg-amber-700 px-4 py-2 font-semibold text-white">Publish project</button></form>
     @else
         <form method="POST" action="{{ route('my.projects.adoption-availability', $project) }}" class="mt-6 rounded-2xl border bg-white p-6">
@@ -76,7 +87,7 @@
                     <article id="request-{{ $request->id }}" class="rounded-xl bg-stone-50 p-4">
                         <p class="font-semibold">{{ $request->requester->name }} · {{ ucfirst($request->status->value) }}</p>
                         <p class="mt-2 whitespace-pre-line text-zinc-700">{{ $request->message }}</p>
-                        @if ($request->status->value === 'pending' && auth()->id() === $project->user_id)
+                        @if ($request->status->value === 'pending' && auth()->user()->can('approve', $request))
                             <div class="mt-4 flex gap-3">
                                 @if ($project->adoption_available)
                                     <form method="POST" action="{{ route('my.adoption-requests.approve', $request) }}">

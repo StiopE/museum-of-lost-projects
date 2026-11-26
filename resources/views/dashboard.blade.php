@@ -23,6 +23,9 @@
         @endforeach
     </dl>
 
+    @can('curate')
+        <nav class="flex gap-6" aria-label="Curator tools"><a class="text-link" href="{{ route('admin.reviews') }}">Review submissions</a><a class="text-link" href="{{ route('admin.categories.index') }}">Manage categories</a></nav>
+    @endcan
     <div class="workspace-columns">
         <section class="workspace-requests">
             <h2 class="text-xl font-bold">Adoption requests</h2>

@@ -63,7 +63,7 @@ class ProjectPolicy
      */
     public function publish(User $user, Project $project): bool
     {
-        return $this->canManage($user, $project);
+        return $project->status !== ProjectStatus::Submitted && $this->canManage($user, $project);
     }
 
     /**

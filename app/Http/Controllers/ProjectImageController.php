@@ -7,6 +7,7 @@ use App\Http\Requests\StoreProjectImagesRequest;
 use App\Models\Project;
 use App\Models\ProjectImage;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -44,6 +45,18 @@ class ProjectImageController extends Controller
         );
 
         return Storage::disk($image->disk)->response($image->image_path);
+    }
+
+    public function update(Request $request, Project $project, ProjectImage $image): RedirectResponse
+    {
+        Gate::authorize('update', $project);
+        $fields = $request->validateWithBag('image'.$image->id, [
+            'caption' => ['nullable', 'string', 'max:255'],
+            'sort_order' => ['required', 'integer', 'between:0,999'],
+        ]);
+        $image->update($fields);
+
+        return back()->with('status', 'Image details saved.');
     }
 
     public function destroy(Project $project, ProjectImage $image): RedirectResponse
