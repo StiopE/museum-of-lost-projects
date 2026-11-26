@@ -2,6 +2,9 @@
 @section('title', 'Manage '.$project->title)
 @section('content')
 <section class="mx-auto max-w-3xl px-6 py-12"><a href="{{ route('my.projects.index') }}" class="text-sm text-amber-800">← My Projects</a><div class="mt-5 flex flex-wrap items-center justify-between gap-3"><div><p class="font-semibold uppercase tracking-widest text-amber-700">{{ $project->status->value }}</p><h1 class="mt-2 text-4xl font-bold">Manage project</h1></div>@if ($project->status->value === 'published')<a class="font-medium text-amber-800" href="{{ route('projects.show', $project) }}">View public page →</a>@endif</div>
+    @if ($project->parentProject?->status === \App\Enums\ProjectStatus::Published)
+        <p class="mt-4">Revival of <a class="text-link" href="{{ route('projects.show', $project->parentProject) }}">{{ $project->parentProject->title }}</a></p>
+    @endif
     <div class="mt-8 rounded-2xl border bg-white p-6 sm:p-8"><h2 class="mb-6 text-xl font-bold">Project details</h2>@include('my.projects._form', ['project' => $project])</div>
     <section class="mt-6 rounded-2xl border bg-white p-6 sm:p-8">
         <h2 class="text-xl font-bold">Project images <span class="text-sm font-normal text-zinc-500">({{ $project->images->count() }} of 6)</span></h2>

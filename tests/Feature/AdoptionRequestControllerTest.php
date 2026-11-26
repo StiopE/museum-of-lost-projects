@@ -107,7 +107,9 @@ test('an explorer can reach the revived draft after the original closes to adopt
         ->assertSeeText('Your request is approved.')
         ->assertSee('href="'.$editLink.'"', false)
         ->assertDontSeeText('Send adoption request');
-    $this->get($editLink)->assertOk();
+    $this->get($editLink)->assertOk()
+        ->assertSeeText('Revival of')
+        ->assertSee('href="'.route('projects.show', $request->project).'"', false);
     $this->get(route('my.projects.index'))->assertSeeText('Revived · draft');
     $this->actingAs(User::factory()->create())->get(route('projects.show', $request->project))
         ->assertDontSee($editLink, false);

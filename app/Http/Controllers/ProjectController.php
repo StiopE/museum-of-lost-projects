@@ -116,7 +116,7 @@ class ProjectController extends Controller
     {
         Gate::authorize('update', $project);
 
-        $project->load(['category', 'images', 'adoptionRequests.requester', 'adoptionRequests.revivedProject']);
+        $project->load(['category', 'images', 'parentProject', 'adoptionRequests.requester', 'adoptionRequests.revivedProject']);
         $updates = $project->updates()
             ->with('author')
             ->latest()
