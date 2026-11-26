@@ -19,7 +19,7 @@ npm run build
 php artisan serve
 ```
 
-Open the address printed by Artisan. The default environment is local, with SQLite and log-based email delivery. Verification and adoption messages appear in `storage/logs/laravel.log`. To reset a **disposable grading database**, run `php artisan migrate:fresh --seed`. This deletes all its existing records. Run `composer ci:check` for formatting, static analysis and the test suite.
+Open the address printed by Artisan. The default environment is local, with SQLite and log-based email delivery. Run `php artisan queue:work` in a second terminal to process queued adoption notifications. Verification and adoption messages appear in `storage/logs/laravel.log`. To reset a **disposable grading database**, run `php artisan migrate:fresh --seed`. This deletes all its existing records. Run `composer ci:check` for formatting, static analysis and the test suite.
 
 ## Assessment accounts
 
