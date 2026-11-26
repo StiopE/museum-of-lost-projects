@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Project;
+use App\Models\ProjectUpdate;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -27,6 +28,7 @@ class UpdateProjectUpdateRequest extends FormRequest
     public function rules(): array
     {
         $update = $this->route('update');
+        abort_unless($update instanceof ProjectUpdate, 404);
 
         return [
             'updates.'.$update->getKey().'.content' => ['required', 'string', 'max:10000'],

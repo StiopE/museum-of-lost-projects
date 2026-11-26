@@ -20,7 +20,7 @@ class ProjectUpdateFactory extends Factory
     {
         return [
             'project_id' => Project::factory()->revived()->published(),
-            'user_id' => fn (array $attributes): int => Project::query()->findOrFail($attributes['project_id'])->user_id,
+            'user_id' => fn (array $attributes): int => Project::query()->whereKey($attributes['project_id'])->firstOrFail()->user_id,
             'content' => fake()->paragraphs(2, true),
         ];
     }

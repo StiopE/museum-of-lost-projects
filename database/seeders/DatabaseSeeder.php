@@ -18,5 +18,12 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             AdminUserSeeder::class,
         ]);
+
+        if (app()->environment(['local', 'testing'])) {
+            $this->call([
+                MuseumExhibitSeeder::class,
+                MuseumCommunitySeeder::class,
+            ]);
+        }
     }
 }

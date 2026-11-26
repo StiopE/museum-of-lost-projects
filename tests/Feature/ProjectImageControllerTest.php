@@ -1,9 +1,12 @@
 <?php
 
+use App\Actions\DeleteProjectImageFiles;
 use App\Models\Project;
 use App\Models\ProjectImage;
 use App\Models\User;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 
 test('a creator can upload an image that is available only to them while the project is a draft', function () {
@@ -176,4 +179,37 @@ test('a nested image URL cannot access an image belonging to another project', f
 
     $this->get(route('projects.images.show', [$project, $image]))
         ->assertNotFound();
+});
+
+test('deleting a project removes its uploads from each recorded disk', function () {
+    $project = Project::factory()->create();
+    foreach (['local', 'public'] as $disk) {
+        Storage::fake($disk)->put('project-images/photo.jpg', 'image');
+        ProjectImage::factory()->for($project)->create(['disk' => $disk, 'image_path' => 'project-images/photo.jpg']);
+    }
+
+    $this->actingAs(User::factory()->create())->delete(route('my.projects.destroy', $project))->assertForbidden();
+    Storage::disk('local')->assertExists('project-images/photo.jpg');
+    $this->actingAs($project->creator)->delete(route('my.projects.destroy', $project))->assertRedirectToRoute('my.projects.index');
+
+    Storage::disk('local')->assertMissing('project-images/photo.jpg');
+    Storage::disk('public')->assertMissing('project-images/photo.jpg');
+    $this->assertModelMissing($project);
+});
+
+test('a failed disk cleanup is queued with the paths needed for a retry', function () {
+    $image = ProjectImage::factory()->create(['disk' => 'local']);
+    Queue::fake();
+    $disk = Mockery::mock(Filesystem::class);
+    $disk->shouldReceive('delete')->once()->with([$image->image_path])->andReturn(false);
+    Storage::set('local', $disk);
+
+    $this->actingAs($image->project->creator)->delete(route('my.projects.destroy', $image->project))->assertRedirect();
+
+    Storage::fake('local')->put($image->image_path, 'image');
+    Queue::assertPushed(DeleteProjectImageFiles::class, function (DeleteProjectImageFiles $job) use ($image): bool {
+        $job->handle();
+
+        return Storage::disk('local')->missing($image->image_path);
+    });
 });

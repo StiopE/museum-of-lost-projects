@@ -1,12 +1,16 @@
 <?php
 
 use App\Http\Controllers\AdoptionRequestController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectImageController;
+use App\Http\Controllers\ProjectReviewController;
 use App\Http\Controllers\ProjectUpdateController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('home');
+Route::get('/', HomeController::class)->name('home');
+Route::view('/about', 'about')->name('about');
 Route::get('/projects', [ProjectController::class, 'index'])->name('projects.index');
 Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 Route::get('/projects/{project}/images/{image}', [ProjectImageController::class, 'show'])
@@ -14,6 +18,14 @@ Route::get('/projects/{project}/images/{image}', [ProjectImageController::class,
     ->name('projects.images.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::middleware('can:curate')->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('categories', CategoryController::class)->except('show');
+        Route::get('reviews', [ProjectReviewController::class, 'index'])->name('reviews');
+        Route::patch('reviews/{project}', [ProjectReviewController::class, 'decide'])->name('reviews.decide');
+    });
+
+    Route::patch('my/projects/{project}/submit', [ProjectReviewController::class, 'submit'])->name('my.projects.submit');
+    Route::put('my/projects/{project}/images/{image}', [ProjectImageController::class, 'update'])->scopeBindings()->name('my.projects.images.update');
     Route::get('dashboard', [ProjectController::class, 'dashboard'])->name('dashboard');
 
     Route::prefix('my/projects')->name('my.projects.')->controller(ProjectController::class)->group(function () {
@@ -23,6 +35,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/{project}/edit', 'edit')->name('edit');
         Route::put('/{project}', 'update')->name('update');
         Route::patch('/{project}/publish', 'publish')->name('publish');
+        Route::patch('/{project}/adoption-availability', 'updateAdoptionAvailability')->name('adoption-availability');
         Route::patch('/{project}/archive', 'archive')->name('archive');
         Route::delete('/{project}', 'destroy')->name('destroy');
     });
@@ -46,6 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('projects.adoption-requests.store');
 
     Route::prefix('my/adoption-requests')->name('my.adoption-requests.')->controller(AdoptionRequestController::class)->group(function () {
+        Route::get('/', 'index')->name('index');
         Route::patch('/{adoptionRequest}/approve', 'approve')->name('approve');
         Route::patch('/{adoptionRequest}/reject', 'reject')->name('reject');
         Route::patch('/{adoptionRequest}/cancel', 'cancel')->name('cancel');

@@ -78,3 +78,20 @@ test('already verified user visiting verification link is redirected without fir
     expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
     Event::assertNotDispatched(Verified::class);
 });
+
+test('the verification prompt explains local log delivery only when it is in use', function (string $environment, string $mailer, bool $usesLog) {
+    $this->app->detectEnvironment(fn () => $environment);
+    config(['mail.default' => $mailer]);
+    $response = $this->actingAs(User::factory()->unverified()->create())->get(route('verification.notice'));
+
+    $response->assertOk();
+    if ($usesLog) {
+        $response->assertSeeText('storage/logs/laravel.log')->assertDontSeeText('we just emailed');
+    } else {
+        $response->assertDontSeeText('storage/logs/laravel.log')->assertSeeText('we just emailed');
+    }
+})->with([
+    ['local', 'log', true],
+    ['local', 'smtp', false],
+    ['production', 'smtp', false],
+]);

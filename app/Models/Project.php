@@ -32,6 +32,8 @@ class Project extends Model
 
     /**
      * Get the creator who submitted the project.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function creator(): BelongsTo
     {
@@ -40,6 +42,8 @@ class Project extends Model
 
     /**
      * Get the project's category.
+     *
+     * @return BelongsTo<Category, $this>
      */
     public function category(): BelongsTo
     {
@@ -48,6 +52,8 @@ class Project extends Model
 
     /**
      * Get the original project this project revives.
+     *
+     * @return BelongsTo<self, $this>
      */
     public function parentProject(): BelongsTo
     {
@@ -56,6 +62,8 @@ class Project extends Model
 
     /**
      * Get projects revived from this project.
+     *
+     * @return HasMany<self, $this>
      */
     public function revivedProjects(): HasMany
     {
@@ -64,14 +72,18 @@ class Project extends Model
 
     /**
      * Get the images attached to this project.
+     *
+     * @return HasMany<ProjectImage, $this>
      */
     public function images(): HasMany
     {
-        return $this->hasMany(ProjectImage::class)->orderBy('sort_order');
+        return $this->hasMany(ProjectImage::class)->orderBy('sort_order')->orderBy('id');
     }
 
     /**
      * Get the adoption requests for this project.
+     *
+     * @return HasMany<AdoptionRequest, $this>
      */
     public function adoptionRequests(): HasMany
     {
@@ -80,6 +92,8 @@ class Project extends Model
 
     /**
      * Get the adoption request that created this revived project.
+     *
+     * @return HasOne<AdoptionRequest, $this>
      */
     public function originatingAdoptionRequest(): HasOne
     {
@@ -88,6 +102,8 @@ class Project extends Model
 
     /**
      * Get the progress updates for this project.
+     *
+     * @return HasMany<ProjectUpdate, $this>
      */
     public function updates(): HasMany
     {
@@ -97,7 +113,7 @@ class Project extends Model
     /**
      * Get the attributes that should be cast.
      *
-     * @return array<string, string>
+     * @return array{status: ProjectStatus::class, adoption_available: 'boolean'}
      */
     protected function casts(): array
     {

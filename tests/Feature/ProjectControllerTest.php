@@ -174,3 +174,37 @@ test('a different user cannot edit or publish another creators project', functio
         'status' => ProjectStatus::Draft->value,
     ]);
 });
+
+test('a creator can open and close requests without taking a project offline', function () {
+    $project = Project::factory()->published()->create();
+    $url = route('my.projects.adoption-availability', $project);
+    $this->actingAs($project->creator)->get(route('my.projects.edit', $project))
+        ->assertSeeText('Open to new requests')->assertSee($url, false);
+    $this->patch($url, ['adoption_available' => 1])->assertRedirectToRoute('my.projects.edit', $project);
+    expect($project->refresh()->adoption_available)->toBeTrue();
+    $this->patch($url, ['adoption_available' => 0])->assertRedirectToRoute('my.projects.edit', $project);
+    expect($project->refresh()->adoption_available)->toBeFalse();
+    $this->get(route('projects.show', $project))->assertOk();
+});
+
+test('only managed published projects can have their availability changed', function () {
+    $draft = Project::factory()->create();
+    $url = route('my.projects.adoption-availability', $draft);
+    $this->actingAs(User::factory()->create())->patch($url, ['adoption_available' => 1])->assertForbidden();
+    $this->actingAs($draft->creator)->patch($url, ['adoption_available' => 1])->assertSessionHasErrors('adoption_available');
+    $this->patch($url, ['adoption_available' => 'unknown'])->assertSessionHasErrors('adoption_available');
+    expect($draft->refresh()->adoption_available)->toBeFalse();
+});
+
+test('visitors can combine the adoption and category filters', function () {
+    $category = Category::factory()->create();
+    $open = Project::factory()->for($category)->availableForAdoption()->create();
+    $closed = Project::factory()->for($category)->published()->create();
+    $draft = Project::factory()->for($category)->create(['adoption_available' => true]);
+    $other = Project::factory()->availableForAdoption()->create();
+
+    $this->get(route('projects.index', ['category' => $category->slug, 'adoption' => 'open']))
+        ->assertOk()->assertSeeText($open->title)
+        ->assertDontSeeText($closed->title)->assertDontSeeText($draft->title)->assertDontSeeText($other->title)
+        ->assertSeeText('1 exhibit');
+});

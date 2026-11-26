@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\DeleteProjectImageFiles;
+use App\Enums\AdoptionRequestStatus;
 use App\Enums\ProjectStatus;
 use App\Http\Requests\PublishProjectRequest;
 use App\Http\Requests\StoreProjectRequest;
+use App\Http\Requests\UpdateAdoptionAvailabilityRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Category;
 use App\Models\Project;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
@@ -27,12 +31,15 @@ class ProjectController extends Controller
 
         $projects = $user->projects()
             ->with('category')
-            ->latest()
+            ->latest('updated_at')
+            ->orderByDesc('id')
             ->limit(5)
             ->get();
 
         return view('dashboard', [
             'projectCounts' => $projectCounts,
+            'pendingRequestCount' => $user->receivedAdoptionRequests()->where('adoption_requests.status', AdoptionRequestStatus::Pending)->count(),
+            'latestSentRequest' => $user->adoptionRequests()->with('project')->latest('updated_at')->orderByDesc('id')->first(),
             'projects' => $projects,
         ]);
     }
@@ -44,11 +51,14 @@ class ProjectController extends Controller
             ? Category::query()->where('slug', $categorySlug)->firstOrFail()
             : null;
 
+        $openOnly = $request->query('adoption') === 'open';
         $projects = Project::query()
             ->where('status', ProjectStatus::Published)
+            ->when($openOnly, fn ($query) => $query->where('adoption_available', true))
             ->when($category, fn ($query) => $query->where('category_id', $category->id))
             ->with(['category', 'creator'])
             ->latest()
+            ->orderByDesc('id')
             ->paginate(12)
             ->withQueryString();
 
@@ -56,6 +66,7 @@ class ProjectController extends Controller
             'projects' => $projects,
             'categories' => Category::query()->orderBy('name')->get(),
             'selectedCategory' => $category,
+            'openOnly' => $openOnly,
         ]);
     }
 
@@ -70,7 +81,7 @@ class ProjectController extends Controller
         $adoptionRequest = auth()->check()
             ? $project->adoptionRequests()
                 ->where('user_id', auth()->id())
-                ->latest()
+                ->orderByDesc('id')
                 ->first()
             : null;
 
@@ -105,7 +116,7 @@ class ProjectController extends Controller
     {
         Gate::authorize('update', $project);
 
-        $project->load(['category', 'images', 'adoptionRequests.requester', 'adoptionRequests.revivedProject']);
+        $project->load(['category', 'images', 'parentProject', 'adoptionRequests.requester', 'adoptionRequests.revivedProject']);
         $updates = $project->updates()
             ->with('author')
             ->latest()
@@ -146,6 +157,18 @@ class ProjectController extends Controller
         return redirect()->route('my.projects.index')->with('status', 'Project published.');
     }
 
+    public function updateAdoptionAvailability(UpdateAdoptionAvailabilityRequest $request, Project $project): RedirectResponse
+    {
+        $changed = Project::query()->whereKey($project->id)->where('status', ProjectStatus::Published)
+            ->update(['adoption_available' => $request->boolean('adoption_available')]);
+
+        if (! $changed && $project->fresh()?->status !== ProjectStatus::Published) {
+            return back()->withErrors(['adoption_available' => 'Publish the project before changing its adoption availability.']);
+        }
+
+        return redirect()->route('my.projects.edit', $project)->with('status', 'Adoption availability saved.');
+    }
+
     public function archive(Project $project): RedirectResponse
     {
         Gate::authorize('archive', $project);
@@ -160,9 +183,14 @@ class ProjectController extends Controller
 
     public function destroy(Project $project): RedirectResponse
     {
-        Gate::authorize('delete', $project);
+        DB::transaction(function () use ($project): void {
+            $project = Project::query()->lockForUpdate()->findOrFail($project->id);
+            Gate::authorize('delete', $project);
 
-        $project->delete();
+            $images = $project->images()->get();
+            $project->delete();
+            DeleteProjectImageFiles::afterDeletion($images);
+        });
 
         return redirect()->route('my.projects.index')->with('status', 'Project deleted.');
     }

@@ -16,6 +16,8 @@ class ProjectImage extends Model
 
     /**
      * Get the project this image belongs to.
+     *
+     * @return BelongsTo<Project, $this>
      */
     public function project(): BelongsTo
     {

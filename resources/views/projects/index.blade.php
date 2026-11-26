@@ -1,31 +1,29 @@
 @extends('layouts.museum')
-@section('title', 'Explore | Museum of Failed Projects')
+@section('title', 'Collection | Museum of Failed Projects')
 @section('content')
-<section class="mx-auto max-w-6xl px-6 py-12">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-        <div><p class="text-sm font-semibold uppercase tracking-widest text-amber-700">The collection</p><h1 class="mt-2 text-4xl font-bold">Projects worth remembering</h1><p class="mt-3 text-zinc-600">Browse unfinished projects and the stories behind them.</p></div>
-        @auth<a href="{{ route('my.projects.create') }}" class="rounded-lg bg-zinc-900 px-4 py-2 text-white">Submit a project</a>@else<a href="{{ route('register') }}" class="rounded-lg bg-zinc-900 px-4 py-2 text-white">Submit a project</a>@endauth
-    </div>
-    <div class="mt-8 flex flex-wrap gap-2">
-        <a href="{{ route('projects.index') }}" class="rounded-full border px-4 py-2 text-sm {{ !$selectedCategory ? 'border-zinc-900 bg-zinc-900 text-white' : 'border-stone-300' }}">All categories</a>
+<section class="shell catalogue">
+    <header class="catalogue-head">
+        <div><p class="eyebrow"><span class="rule-mark" aria-hidden="true"></span> Museum catalogue</p>
+            <h1 class="display-title">The <em>collection.</em></h1>
+            <p class="lede">Browse the unfinished work, read what happened, and see what might come next.</p></div>
+        <a class="primary-link" href="{{ auth()->check() ? route('my.projects.create') : route('register') }}">Submit a project</a>
+    </header>
+    <nav class="catalogue-filters" aria-label="Filter by category">
+        <a href="{{ route('projects.index', ['adoption' => $openOnly ? 'open' : null]) }}" @if(!$selectedCategory) aria-current="true" @endif>All categories</a>
         @foreach ($categories as $category)
-            <a href="{{ route('projects.index', ['category' => $category->slug]) }}" class="rounded-full border px-4 py-2 text-sm {{ $selectedCategory?->is($category) ? 'border-zinc-900 bg-zinc-900 text-white' : 'border-stone-300' }}">{{ $category->name }}</a>
+            <a href="{{ route('projects.index', ['category' => $category->slug, 'adoption' => $openOnly ? 'open' : null]) }}" @if($selectedCategory?->is($category)) aria-current="true" @endif>{{ $category->name }}</a>
         @endforeach
+    </nav>
+    <div class="results-bar">
+        <p>{{ $projects->total() }} {{ Str::plural('exhibit', $projects->total()) }}</p>
+        <a class="filter-toggle" href="{{ route('projects.index', ['category' => $selectedCategory?->slug, 'adoption' => $openOnly ? null : 'open']) }}">
+            <span aria-hidden="true">{{ $openOnly ? '☑' : '□' }}</span> {{ $openOnly ? 'Show all availability' : 'Open for adoption only' }}</a>
     </div>
     @if ($projects->isEmpty())
-        <div class="mt-10 rounded-2xl border border-dashed border-stone-300 p-12 text-center"><h2 class="text-xl font-semibold">The galleries are waiting</h2><p class="mt-2 text-zinc-600">There are no published projects here yet.</p></div>
+        <p class="empty-note">No published exhibits match these filters. <a class="text-link" href="{{ route('projects.index') }}">Browse all exhibits</a></p>
     @else
-        <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            @foreach ($projects as $project)
-                <a href="{{ route('projects.show', $project) }}" class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-                    <span class="text-sm font-medium text-amber-700">{{ $project->category->name }}</span>
-                    <h2 class="mt-3 text-xl font-bold">{{ $project->title }}</h2>
-                    <p class="mt-3 line-clamp-3 text-sm leading-6 text-zinc-600">{{ $project->description }}</p>
-                    <p class="mt-5 text-xs text-zinc-500">Shared by {{ $project->creator->name }}</p>
-                </a>
-            @endforeach
-        </div>
-        <div class="mt-8">{{ $projects->links() }}</div>
+        <x-exhibit-list :projects="$projects" />
+        <div class="pagination-wrap">{{ $projects->links() }}</div>
     @endif
 </section>
 @endsection

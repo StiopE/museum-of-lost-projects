@@ -46,7 +46,8 @@ class AdoptionRequestPolicy
      */
     public function approve(User $user, AdoptionRequest $adoptionRequest): bool
     {
-        return $adoptionRequest->project->user_id === $user->id;
+        return $adoptionRequest->project->user_id === $user->id
+            || ($user->is_admin && $adoptionRequest->user_id !== $user->id);
     }
 
     /**
@@ -54,7 +55,7 @@ class AdoptionRequestPolicy
      */
     public function reject(User $user, AdoptionRequest $adoptionRequest): bool
     {
-        return $adoptionRequest->project->user_id === $user->id;
+        return $this->approve($user, $adoptionRequest);
     }
 
     /**

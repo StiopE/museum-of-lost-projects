@@ -17,6 +17,8 @@ class AdoptionRequest extends Model
 
     /**
      * Get the project being considered for adoption.
+     *
+     * @return BelongsTo<Project, $this>
      */
     public function project(): BelongsTo
     {
@@ -25,6 +27,8 @@ class AdoptionRequest extends Model
 
     /**
      * Get the user who submitted the request.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function requester(): BelongsTo
     {
@@ -33,6 +37,8 @@ class AdoptionRequest extends Model
 
     /**
      * Get the project created after this request was approved.
+     *
+     * @return BelongsTo<Project, $this>
      */
     public function revivedProject(): BelongsTo
     {
@@ -42,7 +48,7 @@ class AdoptionRequest extends Model
     /**
      * Get the attributes that should be cast.
      *
-     * @return array<string, string>
+     * @return array{status: AdoptionRequestStatus::class, responded_at: 'datetime'}
      */
     protected function casts(): array
     {

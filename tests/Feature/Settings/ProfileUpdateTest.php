@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\ProjectImage;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 test('profile page is displayed', function () {
@@ -93,6 +95,18 @@ test('user can delete their account', function () {
 
     expect($user->fresh())->toBeNull();
     expect(auth()->check())->toBeFalse();
+});
+
+test('account deletion also removes the files belonging to its projects', function () {
+    $image = ProjectImage::factory()->create(['disk' => 'local']);
+    Storage::fake('local')->put($image->image_path, 'image');
+    $this->actingAs($image->project->creator);
+
+    Livewire::test('pages::settings.delete-user-modal')
+        ->set('password', 'password')->call('deleteUser')->assertHasNoErrors();
+
+    Storage::disk('local')->assertMissing($image->image_path);
+    $this->assertModelMissing($image);
 });
 
 test('correct password must be provided to delete account', function () {
